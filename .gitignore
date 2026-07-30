@@ -1,0 +1,10 @@
+# built binaries
+roadtrip
+checker
+gen
+tests
+*.o
+tests-*.out
+# local clutter
+.DS_Store
+resumed/
