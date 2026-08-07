@@ -44,9 +44,19 @@ static bool run(const string& cmd, vector<string>& lines){
     return status == 0;
 }
 
-static void pass(const string& name){
+// a passing check prints what it got and what it wanted, not just "pass".
+// they are identical on success by definition, but printing both makes the
+// suite self-documenting: the expected figures live in the output rather
+// than only in this file.
+static void pass(const string& name, const string& got = "",
+                 const string& want = ""){
     ++passed;
     cout << "  pass  " << name << "\n";
+
+    if (!got.empty()) {
+        cout << "          result:  " << got << "\n"
+             << "          correct: " << want << "\n";
+    }
 }
 
 static void fail(const string& name, const string& want, const string& got){
@@ -62,14 +72,16 @@ static void expectRoute(const string& name, const string& args,
     vector<string> out;
     bool ok = run("./roadtrip " + args, out);
 
+    string got = out.empty() ? "(nothing)" : out[0];
+    if (out.size() > 1) got += " / " + out[1];
+    const string want = score + " / " + route;
+
     if (ok && out.size() > 1 && out[0] == score && out[1] == route) {
-        pass(name);
+        pass(name, got, want);
         return;
     }
 
-    string got = out.empty() ? "(nothing)" : out[0];
-    if (out.size() > 1) got += " / " + out[1];
-    fail(name, score + " / " + route, got);
+    fail(name, want, got);
 }
 
 // a run that should be rejected, checked on its message and a failing exit
@@ -77,12 +89,14 @@ static void expectError(const string& name, const string& args, const string& ms
     vector<string> out;
     bool ok = run("./roadtrip " + args, out);
 
+    const string got = out.empty() ? "(nothing)" : out[0];
+
     if (!ok && !out.empty() && out[0] == msg) {
-        pass(name);
+        pass(name, got + "  [exit 1]", msg + "  [exit 1]");
         return;
     }
 
-    fail(name, msg, out.empty() ? "(nothing)" : out[0]);
+    fail(name, msg, got);
 }
 
 // the DP and the brute-force checker must agree on the whole output. gen is
@@ -320,7 +334,7 @@ int main(){
     vector<string> loop;
     if (run("./roadtrip --mode OPTLOOP < trip14.txt", loop)
         && !loop.empty() && loop[0] == "2732.12") {
-        pass("trip14: OPTLOOP tour total");
+        pass("trip14: OPTLOOP tour total", loop[0], "2732.12");
     } else {
         fail("trip14: OPTLOOP tour total", "2732.12",
              loop.empty() ? "(nothing)" : loop[0]);
