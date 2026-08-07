@@ -85,6 +85,19 @@ per region:  lat lon siteCount
 Names are single tokens (`Moab,UT`). Beauty is a star rating out of 5, higher
 is better. Node 0 is the origin and has no sites.
 
+### Bundled datasets
+
+| File | Regions | Route | Purpose |
+|---|---|---|---|
+| `western-usa.txt` | 59 | Denver to San Francisco | the default working set |
+| `trip14.txt` | 15 | Denver to San Francisco | small enough for `OPTLOOP` |
+| `usa13509-parks.txt` | 13,568 | New York to San Francisco | scale test, see Complexity |
+| fixtures | 2-4 | synthetic | one rule each, see Verification |
+
+Each region here holds exactly one campsite, so region and site describe the
+same place. The nesting exists for a later phase where a region contains
+several real campgrounds; `multisite.txt` is the fixture that exercises it.
+
 ## How it works
 
 - **Distance** — haversine great-circle miles times `ROAD_FACTOR = 1.25`, since
@@ -136,6 +149,21 @@ not a time one, and the program refuses past it rather than failing at runtime.
 
 The gap between O(N · n²) and O(2ⁿ · n²) is the point: `ROADTRIP` has a natural
 ordering to exploit, a tour does not.
+
+### Measured at scale
+
+`usa13509-parks.txt` is 13,568 regions from New York to San Francisco, 230
+times the default dataset. On a 2026 laptop at 7 nights:
+
+```
+7.12 s wall clock, 1.37 GB peak resident
+```
+
+which is what O(N · n²) predicts: 7 x 13,569² is roughly 1.3 billion state
+relaxations, and the n² distance matrix alone is 13,569² x 8 bytes = 1.47 GB.
+The DP dominates time, the matrix dominates memory, and the run confirms both
+without hitting a wall. Note the contrast with `OPTLOOP`, which refuses past
+20 regions: that is the difference a progress ordering buys.
 
 ## Design notes
 
