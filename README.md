@@ -339,12 +339,12 @@ Two details behind those numbers, because both are easy to overstate:
 
 ## AI assistance and credits
 
-This project was built with AI assistance, and that usage is part of the
-project's subject matter. Claude (Anthropic's Claude Code) was the primary
-contributor to the solver, checker, test harness, and the companion website,
-working from my specifications, code reviews, and measured parameter sweeps.
-The companion study also analyzes codebases produced from generic prompts by
-Codex (ChatGPT), Claude Code, and Microsoft Copilot; those codebases are
-preserved unmodified. Every algorithmic decision, constraint, and expected
-test value was specified and verified by me, and every number in these docs
-is reproducible with `make test`.
+I (Rohan Maxa) am the primary author and contributor of this project. I
+designed the algorithms, specified every constraint and expected test value,
+ran the measured parameter sweeps, and reviewed and verified all of the code.
+Claude Code (Anthropic) was used as an AI coding assistant to help implement
+the solver, checker, test harness, and companion website from my
+specifications. The companion study also analyzes codebases produced from
+generic prompts by Codex (ChatGPT), Claude Code, and Microsoft Copilot; those
+codebases are preserved unmodified. Every number in these docs is
+reproducible with `make test`.
